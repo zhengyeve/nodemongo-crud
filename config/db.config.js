@@ -28,3 +28,7 @@ const connectedDb = (async () => {
 })();
 
 module.exports = { connectedDb };
+
+module.exports = {
+    url: MONGODB_URI
+}
