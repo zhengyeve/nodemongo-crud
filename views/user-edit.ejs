@@ -2,43 +2,103 @@
   <%- include("nav.ejs") %>
 
   <main class="container my-5">
-    <div class="card shadow-sm">
+    <div class="card shadow-sm mt-5">
       <div class="card-body">
-        <h2 class="card-title mb-4">Update User</h2>
+        <h3 class="card-title mb-3">Current User Info</h3>
+        <ul class="list-group mb-4">
+          <li class="list-group-item"><strong>Name:</strong> <%= user.name %></li>
+          <li class="list-group-item"><strong>Surname:</strong> <%= user.surname %></li>
+          <li class="list-group-item"><strong>Email:</strong> <%= user.email %></li>
+          <li class="list-group-item"><strong>Department:</strong> <%= user.department %></li>
+          <li class="list-group-item"><strong>Created At:</strong> <%= user.createdAt ? new Date(user.createdAt).toLocaleString() : '' %></li>
+          <li class="list-group-item"><strong>Updated At:</strong> <%= user.updatedAt ? new Date(user.updatedAt).toLocaleString() : '' %></li>
+          <li class="list-group-item"><strong>ID:</strong> <%= user.id %></li>
+        </ul>
+      </div>
+    </div>
 
-        <form action="/user/create" method="POST">
+    <div class="card shadow-sm mt-4 mb-5">
+      <div class="card-body">
+        <h3 class="card-title mb-3">Update User</h3>
+        <form action="/api/users/<%= user.id %>" method="POST">
+          <input type="hidden" name="_method" value="PUT">
           <div class="mb-3">
-            <label for="name" class="form-label">User Name</label>
-            <input type="text" class="form-control" id="name" name="name" required>
+            <label for="edit-name" class="form-label">Name</label>
+            <input 
+              type="text"
+              class="form-control"
+              id="edit-name"
+              name="name"
+              value="<%= user.name %>"
+              required
+            >
           </div>
-
           <div class="mb-3">
-            <label for="email" class="form-label">Email</label>
-            <input type="email" class="form-control" id="email" name="email" required>
+            <label for="edit-surname" class="form-label">Surname</label>
+            <input 
+              type="text"
+              class="form-control"
+              id="edit-surname"
+              name="surname"
+              value="<%= user.surname %>"
+              required
+            >
           </div>
-
           <div class="mb-3">
-            <label for="password" class="form-label">Password</label>
-            <input type="password" class="form-control" name="password" id="password">
+            <label for="edit-email" class="form-label">Email</label>
+            <input 
+              type="email"
+              class="form-control"
+              id="edit-email"
+              name="email"
+              value="<%= user.email %>"
+              required
+            >
           </div>
-
           <div class="mb-3">
-            <label for="address" class="form-label">Address</label>
-            <input type="text" class="form-control" name="address" id="address">
+            <label for="edit-department" class="form-label">Department</label>
+            <input 
+              type="text"
+              class="form-control"
+              id="edit-department"
+              name="department"
+              value="<%= user.department %>"
+            >
           </div>
-
           <div class="mb-3">
-            <label for="number" class="form-label">Number</label>
-            <input type="number" class="form-control" name="number" id="number">
-          </div>
-
-          <div class="mb-3">
-            <button type="submit" class="btn btn-primary">Submit</button>
-            <a href="/users" class="btn btn-secondary ms-2">Cancel</a>
+            <button type="submit" class="btn btn-primary">Update</button>
+            <a href="/api/users/<%= user.id %>" class="btn btn-secondary ms-2">Cancel</a>
           </div>
         </form>
       </div>
     </div>
   </main>
+    <script>
+      // If Express doesn't support _method middleware, submit via AJAX
+      document.querySelector('form[action^="/api/users/"]').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const form = e.target;
+        const formData = new FormData(form);
+        const data = {};
+        for (const [key, val] of formData.entries()) {
+          if (key !== '_method') data[key] = val;
+        }
+        console.log(data);
+        fetch(form.action, {
+          method: 'PUT',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify(data)
+        })
+        .then(resp => {
+          if (resp.ok) {
+            window.location.href = '/user/<%= user.id %>';
+            console.log(resp);
+          } else {
+            return resp.text().then(msg => { throw new Error(msg) });
+          }
+        })
+        .catch(err => alert("Failed to update user: " + err.message));
+      });
+    </script>
 
 <%- include('footer.ejs') -%>

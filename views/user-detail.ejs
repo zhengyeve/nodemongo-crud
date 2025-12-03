@@ -5,25 +5,56 @@
     <div class="card shadow-sm">
       <div class="card-body">
         <h1 class="card-title">Profile</h1>
-        <h2 class="h4 text-primary mb-3"><%= user.name %></h2>
+        <h2 class="h4 text-primary mb-3"><%= user.name %> <%= user.surname %></h2>
 
         <ul class="list-group mb-3">
           <li class="list-group-item"><strong>Email:</strong> <%= user.email %></li>
           <li class="list-group-item"><strong>Password:</strong> <%= user.password %></li>
-          <!-- <li class="list-group-item"><strong>Address:</strong> <%= user.address %></li> -->
-          <!-- <li class="list-group-item"><strong>Number:</strong> <%= user.number %></li> -->
+          <li class="list-group-item"><strong>Department:</strong> <%= user.department %></li>
+          <li class="list-group-item"><strong>Created At:</strong> <%= user.createdAt ? new Date(user.createdAt).toLocaleString() : '' %></li>
+          <li class="list-group-item"><strong>Updated At:</strong> <%= user.updatedAt ? new Date(user.updatedAt).toLocaleString() : '' %></li>
+          <li class="list-group-item"><strong>ID:</strong> <%= user.id %></li>
         </ul>
 
         <div class="d-flex gap-2">
-          <form action="/users/<%= user.id %>" method="post" onsubmit="return confirm('Remove this user?')">
+          <form action="/api/users/<%= user.id %>" method="DELETE" onsubmit="return confirm('Remove this user?')">
             <button type="submit" class="btn btn-danger">Remove</button>
           </form>
 
-          <a href="/edit/<%= user.id %>/<%= action %>" class="btn btn-primary">Update</a>
+          <a href="/user/edit/<%= user.id %>" class="btn btn-primary">Update</a>
           <a href="/users" class="btn btn-secondary ms-auto">Back</a>
         </div>
       </div>
     </div>
+    <script>
+      // Intercept Remove button submit to use DELETE method
+      document.addEventListener('DOMContentLoaded', function () {
+        const form = document.querySelector('form[action^="/api/users/"]');
+        if (form) {
+          form.addEventListener('submit', function (e) {
+            e.preventDefault();
+            if (confirm('Remove this user?')) {
+              fetch(form.action, {
+                method: 'DELETE',
+                headers: {
+                  'Content-Type': 'application/json'
+                }
+              })
+              .then(response => {
+                if (response.ok) {
+                  window.location.href = '/users';
+                } else {
+                  return response.text().then(msg => { throw new Error(msg) });
+                }
+              })
+              .catch(err => {
+                alert("Failed to delete user: " + err.message);
+              });
+            }
+          });
+        }
+      });
+    </script>
   </main>
 
 <%- include('footer.ejs') -%>

@@ -14,6 +14,11 @@
           </div>
 
           <div class="mb-3">
+            <label for="surname" class="form-label">User Surname</label>
+            <input type="text" class="form-control" id="surname" name="surname" required>
+          </div>
+
+          <div class="mb-3">
             <label for="email" class="form-label">Email</label>
             <input type="email" class="form-control" id="email" name="email">
           </div>
@@ -21,6 +26,11 @@
           <div class="mb-3">
             <label for="password" class="form-label">Password</label>
             <input type="password" class="form-control" id="password" name="password" required>
+          </div>
+
+          <div class="mb-3">
+            <label for="department" class="form-label">Department</label>
+            <input type="text" class="form-control" id="department" name="department" required>
           </div>
 
           <div class="mb-3">
@@ -46,8 +56,10 @@
         const formData = new FormData(form);
         const payload = {
           name: formData.get('name') || '',
+          surname: formData.get('surname') || '',
           email: formData.get('email') || '',
-          password: formData.get('password') || ''
+          password: formData.get('password') || '',
+          department: formData.get('department') || ''
         };
 
         try {

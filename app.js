@@ -39,7 +39,8 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 // Hello World
 app.get('/', (req, res) => {
-    res.send('Hello World');
+    // res.send('Hello World');
+    res.redirect('/home');
 });
 
 // page renders 
@@ -114,6 +115,27 @@ app.get('/user/:id', (req, res) => {
 });
 
 
+// edit user 
+app.get('/user/edit/:id', (req, res)=>{// reuse controller which expects (req, res) and calls res.send(data)
+  const fakeRes = {
+    send: (data) => {
+      // render the edit view with the user object
+      res.render('user-edit', {
+        user: data,
+        // action: '',
+        title: 'Edit User Profile'
+    });
+    },
+    status: (code) => ({
+      send: (payload) => {
+        // forward error as JSON with status
+        res.status(code).send(payload);
+      }
+    })
+  };
+
+  users.findOne(req, fakeRes);
+})
 
 app.listen(port, () => {
     console.log(`App listening at http://localhost:${port}`);

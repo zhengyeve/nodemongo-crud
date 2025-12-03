@@ -10,11 +10,13 @@ exports.create = (req, res) => {
     }
 
     // create a user
-    var emailGen = req.body.name.replace(/[^\w]/g, '_').toLowerCase() + "@sample.com"
+    var emailGen = req.body.name.replace(/[^\w]/g, '_').toLowerCase() + '.' + req.body.surname.replace(/[^\w]/g, '_').toLowerCase() + "@apolloniadental.com"
     const user = new User({
         name: req.body.name,
+        surname: req.body.surname,
         password: req.body.password,
-        email: req.body.email ? req.body.email : emailGen 
+        email: req.body.email ? req.body.email : emailGen,
+        department: req.body.department ? req.body.department : "UNASSIGNED"
     })
 
     // save
