@@ -1,36 +1,70 @@
 <%- include('header.ejs') -%>
 
-<h1>Add User</h1>
-
-<html lang="en">
-
-<body>
   <%- include("nav.ejs") %>
+       <div class="content"> <h2><%= title %></h2> </div>
 
   <div class="create-user content">
-    <form action="/user/create" method="POST">
-      <label for="name">UserName:</label>
-      <input type="text" id="name" name="name" required>
-    </br>
-      <label for="email">Email:</label>
-      <input type="email" id="email" name="email" required>
-    </br>
-      <label for="password">password:</label>
-      <input type="password" name="password" id="password" required>
-    </br>
-      <label for="address">Address:</label>
-      <input type="text" name="address" id="address">
-    </br>
-      <label for="number">Number:</label>
-      <input type="number" name="number" id="number">
 
-     <div class="sub">
-      <button type="submit">Submit</button>
-     </div> 
+    
+    <form action="/api/users" method="POST">
+      <div class="form-group">
+        <label for="name">User Name:</label>
+        <input type="text" id="name" name="name" required>
+      </div>
+      
+      <div class="form-group">
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email">
+      </div>
+      
+      <div class="form-group">
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password" required>
+      </div>
+
+      <div class="form-actions">
+        <button type="submit">Submit</button>
+      </div> 
     </form>
   </div>
 
-</body>
-</html>
-
 <%- include('footer.ejs') -%>
+ 
+  <script>
+    // Intercept the form submit, send JSON to the API, then redirect to /users
+    (function(){
+      const form = document.querySelector('.create-user form');
+      if (!form) return;
+
+      form.addEventListener('submit', async function(e){
+        e.preventDefault();
+
+        const formData = new FormData(form);
+        const payload = {
+          name: formData.get('name') || '',
+          email: formData.get('email') || '',
+          password: formData.get('password') || ''
+        };
+
+        try {
+          const resp = await fetch('/api/users', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+          });
+
+          if (resp.ok) {
+            // On success, go to the users list page
+            window.location.href = '/users';
+          } else {
+            // Try to read JSON error message, otherwise show status
+            let errText = 'Error creating user';
+            try { const j = await resp.json(); errText = j.message || JSON.stringify(j); } catch(_){}
+            alert(errText);
+          }
+        } catch (err) {
+          alert('Network error: ' + err.message);
+        }
+      });
+    })();
+  </script>
